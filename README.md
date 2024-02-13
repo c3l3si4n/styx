@@ -1,5 +1,5 @@
 ![styx river](/styx.png)
-# styx
+# styx v0.0.1
  Styx is an cross-platform GUI interface for HackTheBox made in GoLang. Styx's UI is made with the [giu](https://github.com/AllenDang/giu) library.
  ## Features
  #### **Automatic Flag Submission** 
@@ -10,7 +10,8 @@
  Styx allows the user to start and stop machines on their own behalf. Flag submission is handled by the **auto flag submission** feature. 
  
 ## Usage
+1. `go install github.com/c3l3si4n/styx@HEAD`
 1. Create an app token on your HTB profile (any duration you want)
 2. Set the `HTB_TOKEN` environment variable with the value containing your generated token
-3. Compile and run styx
+3. Run styx
 
