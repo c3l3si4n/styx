@@ -2,7 +2,8 @@
 # styx v0.0.1
  Styx is an cross-platform GUI interface for HackTheBox made in GoLang. Styx's UI is made with the [giu](https://github.com/AllenDang/giu) library.  
   
- Styx is made with the objective of reducing the friction of playing seasonal machines on HTB through it's web interface. Allowing the user to quickly perform more time-sensitive actions in a faster manner.
+ ## Purpose
+Styx aims to streamline the process of engaging with seasonal machines on HTB. Its primary focus is to avoid using the HTB web interface, enabling users to execute time-sensitive actions swiftly and efficiently. While Styx prioritizes functionality and speed over aesthetics, it serves as an effective and quicker alternative for interacting with HTB.  
  ## Features
  #### **Automatic Flag Submission** 
  Styx will continuously check the machine clipboard for any user or root flags, and will submit them automatically through HackTheBox's APIs. 
