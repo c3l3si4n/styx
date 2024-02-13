@@ -1,6 +1,6 @@
 # styx
  Styx is an cross-platform GUI interface for HackTheBox made in GoLang. Styx's UI is made with the [giu](https://github.com/AllenDang/giu) library.
-
+![styx river](/styx.png)
  ## Features
  #### **Automatic Flag Submission** 
  Styx will continuously check the machine clipboard for any user or root flags, and will submit them automatically through HackTheBox's APIs. 
