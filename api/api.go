@@ -189,9 +189,9 @@ func StartMachine(machineId int, machineType string) error {
 
 	url := ""
 	if config.MachineAPIType == "machine" {
-		url = fmt.Sprintf("%sapi/v4/machine/stop", API_URL)
+		url = fmt.Sprintf("%sapi/v4/machine/start", API_URL)
 	} else if config.MachineAPIType == "vm" {
-		url = fmt.Sprintf("%sapi/v4/vm/terminate", API_URL)
+		url = fmt.Sprintf("%sapi/v4/vm/spawn", API_URL)
 	}
 
 	if machineType == "seasonal" {
