@@ -188,6 +188,11 @@ func GetUserInfo() (string, error) {
 func StartMachine(machineId int, machineType string) error {
 
 	url := ""
+	if config.MachineAPIType == "machine" {
+		url = fmt.Sprintf("%sapi/v4/machine/stop", API_URL)
+	} else if config.MachineAPIType == "vm" {
+		url = fmt.Sprintf("%sapi/v4/vm/terminate", API_URL)
+	}
 
 	if machineType == "seasonal" {
 		url = fmt.Sprintf("%sapi/v4/arena/start", API_URL)
