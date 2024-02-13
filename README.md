@@ -9,3 +9,8 @@
  #### **Machine Management** 
  Styx allows the user to start and stop machines on their own behalf. Flag submission is handled by the **auto flag submission** feature. 
  
+## Usage
+1. Create an app token on your HTB profile (any duration you want)
+2. Set the `HTB_TOKEN` environment variable with the value containing your generated token
+3. Compile and run styx
+
