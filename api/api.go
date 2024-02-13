@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"styx/config"
 	"time"
+
+	"github.com/c3l3si4n/styx/config"
 )
 
 var PollQueue = make(chan int, 1)

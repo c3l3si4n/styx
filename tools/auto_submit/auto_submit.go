@@ -3,10 +3,11 @@ package autosubmit
 import (
 	"fmt"
 	"strings"
-	"styx/api"
-	"styx/config"
-	"styx/utils"
 	"time"
+
+	"github.com/c3l3si4n/styx/api"
+	"github.com/c3l3si4n/styx/config"
+	"github.com/c3l3si4n/styx/utils"
 )
 
 func isValidHex(s string) bool {

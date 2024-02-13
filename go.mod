@@ -1,4 +1,4 @@
-module styx
+module github.com/c3l3si4n/styx
 
 go 1.22.0
 

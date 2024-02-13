@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
-	"styx/api"
-	"styx/config"
-	autosubmit "styx/tools/auto_submit"
-	"styx/tools/bingo"
-	"styx/utils"
+
+	"github.com/c3l3si4n/styx/api"
+	"github.com/c3l3si4n/styx/config"
+	autosubmit "github.com/c3l3si4n/styx/tools/auto_submit"
+	"github.com/c3l3si4n/styx/tools/bingo"
+	"github.com/c3l3si4n/styx/utils"
 
 	g "github.com/AllenDang/giu"
 	"github.com/fstanis/screenresolution"
