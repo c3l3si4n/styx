@@ -28,8 +28,7 @@ func StartSubmitter() {
 
 			select {
 
-			case t := <-ticker.C:
-				fmt.Println("Tick at", t)
+			case <-ticker.C:
 				if config.AutoFlagSubmit && config.SelectedMachineFound {
 					// Get clipboard data
 					clipboardData := strings.Trim(utils.GetClipboard(), " \n")

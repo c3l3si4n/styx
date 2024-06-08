@@ -31,7 +31,6 @@ func selectedMachineChanged() {
 	go func() {
 
 		config.IsLoadingMachine = true
-		fmt.Println("Selected machine changed to: ", config.SelectedMachine)
 		//machine, err := api.GetMachineDetails(config.SelectedMachine.Name)
 		api.PollQueue <- 1
 
@@ -201,6 +200,6 @@ func main() {
 	go api.HydrateMachineDetails()
 	go api.PollMachineDetails()
 	autosubmit.StartSubmitter()
-	wnd := g.NewMasterWindow("Styx", resolution.Width/2, resolution.Height/2, g.MasterWindowFlagsNotResizable)
+	wnd := g.NewMasterWindow("Styx", 800, resolution.Height/2, g.MasterWindowFlagsNotResizable)
 	wnd.Run(loop)
 }

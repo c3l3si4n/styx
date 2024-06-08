@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -14,31 +15,68 @@ import (
 var PollQueue = make(chan int, 1)
 var API_URL = "https://labs.hackthebox.com/"
 
-func GetMachineDetails(machineName string) (*config.Machine, error) {
-	var machine config.MachineResponse
-
-	url := fmt.Sprintf("%sapi/v4/machine/profile/%s", API_URL, machineName)
-	fmt.Println("URL: ", url)
+func GetRequest(url string) (string, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", config.HtbToken))
-
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer resp.Body.Close()
 	bodyStr := ""
 	if bodyBytes, err := ioutil.ReadAll(resp.Body); err != nil {
-		return nil, err
+		return "", err
 	} else {
 		bodyStr = string(bodyBytes)
 	}
-	fmt.Printf("Response: %+v\n", bodyStr)
+	return bodyStr, nil
+}
+
+func PostRequest(url string, body string, headers map[string]string) (string, error) {
+
+	// Create a new request
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(body)))
+	if err != nil {
+		return "", err
+	}
+
+	// Set headers
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
+
+	// Send the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	// Read the response
+	bodyStr := ""
+	if bodyBytes, err := ioutil.ReadAll(resp.Body); err != nil {
+		return "", err
+	} else {
+		bodyStr = string(bodyBytes)
+	}
+	return bodyStr, nil
+}
+
+func GetMachineDetails(machineName string) (*config.Machine, error) {
+	var machine config.MachineResponse
+
+	url := fmt.Sprintf("%sapi/v4/machine/profile/%s", API_URL, machineName)
+
+	bodyStr, err := GetRequest(url)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := json.Unmarshal([]byte(bodyStr), &machine); err != nil {
 		return nil, err
@@ -53,7 +91,6 @@ func PollMachineDetails() {
 
 	for {
 		<-PollQueue
-		fmt.Println("Polling machine details")
 		machine, err := GetMachineDetails(config.SelectedMachine.Name)
 		if err != nil {
 			fmt.Println("Error polling machine details: ", err)
@@ -91,17 +128,19 @@ type SubmitFlagRequest struct {
 
 func SubmitFlag(flag string, machineId int, machineType string) error {
 	url := fmt.Sprintf("%sapi/v4/machine/own", API_URL)
-
-	if machineType == "seasonal" {
-		url = fmt.Sprintf("%sapi/v4/arena/own", API_URL)
-	}
-
+	log.Println("Machine type: ", machineType)
 	submitFlagRequest := SubmitFlagRequest{
 		Id:   fmt.Sprintf("%d", machineId),
 		Flag: flag,
 	}
+	if machineType == "seasonal" {
+		url = fmt.Sprintf("%sapi/v4/arena/own", API_URL)
+		submitFlagRequest = SubmitFlagRequest{
+			Flag: flag,
+		}
+	}
+
 	reqBody, err := json.Marshal(submitFlagRequest)
-	fmt.Println("URL: ", url)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
@@ -117,18 +156,10 @@ func SubmitFlag(flag string, machineId int, machineType string) error {
 	}
 
 	client := &http.Client{}
-	resp, err := client.Do(req)
+	_, err = client.Do(req)
 	if err != nil {
 		return err
 	}
-	respBody := ""
-	if bodyBytes, err := ioutil.ReadAll(resp.Body); err != nil {
-		return err
-	} else {
-		respBody = string(bodyBytes)
-	}
-	fmt.Printf("Response: %+v\n", respBody)
-	defer resp.Body.Close()
 
 	return nil
 }
@@ -165,14 +196,11 @@ func GetUserInfo() (string, error) {
 	} else {
 		bodyStr = string(bodyBytes)
 	}
-	fmt.Printf("Response: %+v\n", bodyStr)
 
 	var userInfo UserInfo
 	if err := json.Unmarshal([]byte(bodyStr), &userInfo); err != nil {
 		return "", err
 	}
-
-	fmt.Printf("User info: %+v\n", userInfo)
 
 	if userInfo.Info.CanAccessVip {
 		if userInfo.Info.isDedicatedVip {
@@ -197,7 +225,6 @@ func StartMachine(machineId int, machineType string) error {
 	if machineType == "seasonal" {
 		url = fmt.Sprintf("%sapi/v4/arena/start", API_URL)
 	}
-	fmt.Println("URL: ", url)
 	spawnMachineRequest := SpawnMachineRequest{
 		Id: machineId,
 	}
@@ -223,8 +250,8 @@ func StartMachine(machineId int, machineType string) error {
 		return err
 	} else {
 		respBody = string(bodyBytes)
+		fmt.Printf("Response: %s\n", respBody)
 	}
-	fmt.Printf("Response: %+v\n", respBody)
 	defer resp.Body.Close()
 
 	return nil
@@ -245,7 +272,6 @@ func StopMachine(machineId int, machineType string) error {
 	if machineType == "seasonal" {
 		url = fmt.Sprintf("%sapi/v4/arena/stop", API_URL)
 	}
-	fmt.Println("URL: ", url)
 	stopMachineRequest := StopMachineRequest{
 		Id: machineId,
 	}
@@ -266,13 +292,7 @@ func StopMachine(machineId int, machineType string) error {
 	if err != nil {
 		return err
 	}
-	respBody := ""
-	if bodyBytes, err := ioutil.ReadAll(resp.Body); err != nil {
-		return err
-	} else {
-		respBody = string(bodyBytes)
-	}
-	fmt.Printf("Response: %+v\n", respBody)
+
 	defer resp.Body.Close()
 
 	return nil
