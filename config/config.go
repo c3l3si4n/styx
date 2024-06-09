@@ -38,6 +38,6 @@ var IsLoadingMachine bool = false
 var HtbToken = ""
 var SelectedTab = 0
 var ServerEnabled = false
-
+var VPNRegionCurrentID int32
 var VPNRegionSelected int32
 var VPNTypeSelected int32

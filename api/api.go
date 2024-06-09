@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -333,5 +335,55 @@ func SwitchVPNServer(serverId int, arena bool) error {
 	}
 
 	log.Println(bodyStr)
+	config.VPNRegionCurrentID = int32(serverId)
+	DownloadVPNFile(config.VPNRegionCurrentID)
 	return nil
+}
+
+func WriteToFile(data string, filename string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DownloadVPNFile(serverId int32) {
+	// api/v4/access/ovpnfile/202/0
+	url := fmt.Sprintf("%sapi/v4/access/ovpnfile/%d/0", API_URL, serverId)
+	bodyStr, err := GetRequest(url)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(bodyStr)
+
+	err = WriteToFile(bodyStr, "/tmp/vpn.ovpn")
+
+	if err != nil {
+
+		panic(err)
+	}
+
+	ConnectToVPN()
+
+}
+
+func ConnectToVPN() {
+	cmd := exec.Command("sudo", "openvpn", "/tmp/vpn.ovpn")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	go func() {
+		err := cmd.Run()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+
 }
