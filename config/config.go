@@ -21,11 +21,23 @@ type SelectedMachineType struct {
 	Details Machine
 }
 
+type VPNRegion struct {
+	Region string
+	Name   string
+	Type   string
+	Status string
+	IP     string
+}
+
 var MachineAPIType string
 var SelectedMachine SelectedMachineType = SelectedMachineType{}
+var CurrentVPN VPNRegion
 var SelectedMachineFound = false
 var AutoFlagSubmit bool = false
 var IsLoadingMachine bool = false
 var HtbToken = ""
 var SelectedTab = 0
 var ServerEnabled = false
+
+var VPNRegionSelected int32
+var VPNTypeSelected int32

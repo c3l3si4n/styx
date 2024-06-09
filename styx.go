@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/c3l3si4n/styx/api"
@@ -14,6 +15,8 @@ import (
 	"github.com/fstanis/screenresolution"
 )
 
+var possibleVPN = []string{"Release Arena", "Free"}
+var possibleRegions = []string{"us", "eu"}
 var (
 	sashPos1 float32 = 200
 	sashPos2 float32 = 200
@@ -36,6 +39,22 @@ func selectedMachineChanged() {
 
 	}()
 
+}
+
+func vpnDataChanged() {
+	selectedVPNRegion := possibleRegions[config.VPNRegionSelected]
+	selectedVPNType := possibleVPN[config.VPNTypeSelected]
+	vpnListingType := "labs"
+	if selectedVPNType == "Release Arena" {
+		vpnListingType = "competitive"
+	}
+	serverId := api.FindVPNServer(selectedVPNRegion, vpnListingType, selectedVPNType)
+	if serverId == 0 {
+		fmt.Println("Server not found")
+		return
+	}
+	api.SwitchVPNServer(serverId, true)
+	log.Println("Switched to server", serverId)
 }
 func drawMachineTab() g.Layout {
 	initialLayout := g.Layout{}
@@ -83,9 +102,29 @@ func drawMachineTab() g.Layout {
 		contentWindow = append(contentWindow, g.Label(fmt.Sprintf("Mode: %s", config.SelectedMachine.Details.MachineMode)))
 		contentWindow = append(contentWindow, g.Label(fmt.Sprintf("Active: %t", config.SelectedMachine.Details.PlayInfo.IsActive)))
 		contentWindow = append(contentWindow, g.Checkbox("Auto flag submit", &config.AutoFlagSubmit))
-		initialLayout = append(initialLayout, g.Separator())
-		initialLayout = append(initialLayout, contentWindow)
+
+		// separator
+		// show current vpn
+
 	}
+
+	contentWindow = append(contentWindow, g.Separator())
+	contentWindow = append(contentWindow, g.Label(fmt.Sprintf("Current VPN: %s", config.CurrentVPN.Name)))
+	contentWindow = append(contentWindow, g.Label(fmt.Sprintf("VPN IP: %s", config.CurrentVPN.IP)))
+	contentWindow = append(contentWindow, g.Label(fmt.Sprintf("VPN Status: %s", config.CurrentVPN.Status)))
+
+	vpnCombo := g.Layout{}
+
+	vpnCombo = append(vpnCombo,
+		g.Combo("VPN Region", possibleRegions[config.VPNRegionSelected], possibleRegions, &config.VPNRegionSelected).OnChange(vpnDataChanged),
+	)
+	vpnCombo = append(vpnCombo,
+		g.Combo("VPN Type", possibleVPN[config.VPNTypeSelected], possibleVPN, &config.VPNTypeSelected).OnChange(vpnDataChanged),
+	)
+
+	contentWindow = append(contentWindow, vpnCombo)
+
+	initialLayout = append(initialLayout, contentWindow)
 
 	return initialLayout
 }
