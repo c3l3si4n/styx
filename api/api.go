@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -111,7 +112,7 @@ type SubmitFlagRequest struct {
 	Flag string `json:"flag"`
 }
 
-func SubmitFlag(flag string, machineId int, machineType string) error {
+func SubmitFlag(flag string, machineId int, machineType string) bool {
 	url := fmt.Sprintf("%sapi/v4/machine/own", API_URL)
 	submitFlagRequest := SubmitFlagRequest{
 		Id:   fmt.Sprintf("%d", machineId),
@@ -126,7 +127,7 @@ func SubmitFlag(flag string, machineId int, machineType string) error {
 
 	reqBody, err := json.Marshal(submitFlagRequest)
 	if err != nil {
-		return err
+		return false
 	}
 
 	headers := map[string]string{
@@ -135,11 +136,14 @@ func SubmitFlag(flag string, machineId int, machineType string) error {
 	}
 	response, err := PostRequest(url, string(reqBody), headers)
 	if err != nil {
-		return err
+		return false
 	}
+	fmt.Println(response)
+	if strings.Contains(response, "is now owned.") {
+		return true
+	}
+	return false
 
-	log.Println("Submit flag response: ", response)
-	return nil
 }
 
 type SpawnMachineRequest struct {
@@ -372,6 +376,28 @@ func DownloadVPNFile(serverId int32) {
 
 	ConnectToVPN()
 
+}
+
+func DownloadFile(url string, outputPath string) {
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(outputPath)
+	if err != nil {
+		panic(err)
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func ConnectToVPN() {

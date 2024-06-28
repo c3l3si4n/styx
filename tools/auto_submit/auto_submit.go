@@ -22,6 +22,9 @@ func isValidHex(s string) bool {
 var SubmittedFlags = make(map[string]bool)
 
 func StartSubmitter() {
+	// downlaod https://app.hackthebox.com/soundEffects/machine_pwned.mp3
+	api.DownloadFile("https://app.hackthebox.com/soundEffects/machine_pwned.mp3", "/var/tmp/machine_pwned.mp3")
+
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)
 		for {
@@ -37,10 +40,14 @@ func StartSubmitter() {
 						if isValidHex(clipboardData) {
 							if _, ok := SubmittedFlags[clipboardData]; !ok {
 								// Submit flag
-								err := api.SubmitFlag(clipboardData, config.SelectedMachine.Details.Id, config.SelectedMachine.Details.MachineMode)
-								if err != nil {
-									fmt.Println("Error submitting flag: ", err)
+								owned := api.SubmitFlag(clipboardData, config.SelectedMachine.Details.Id, config.SelectedMachine.Details.MachineMode)
+								if owned {
+									fmt.Println("Flag submitted successfully")
+									// Play sound
+									utils.PlaySound("/var/tmp/machine_pwned.mp3")
+
 								}
+
 								// Add flag to submitted flags
 								SubmittedFlags[clipboardData] = true
 
