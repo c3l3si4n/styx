@@ -13,8 +13,9 @@ Styx aims to streamline the process of engaging with seasonal machines on HTB. I
  Styx allows the user to start and stop machines on their own behalf. Flag submission is handled by the **auto flag submission** feature. 
 
 ## Usage
-1. `go install github.com/c3l3si4n/styx@HEAD`
-1. Create an app token on your HTB profile (any duration you want)
-2. Set the `HTB_TOKEN` environment variable with the value containing your generated token
-3. Run styx
+1. `sudo apt install -y libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxxf86vm-dev`
+2. `go install github.com/c3l3si4n/styx@HEAD`
+3. Create an app token on your HTB profile (any duration you want)
+4. Set the `HTB_TOKEN` environment variable with the value containing your generated token
+5. Run styx
 
