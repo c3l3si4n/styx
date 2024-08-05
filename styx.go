@@ -96,7 +96,16 @@ func drawMachineTab() g.Layout {
 		contentWindow = append(contentWindow, g.Separator())
 
 		contentWindow = append(contentWindow, g.Label(fmt.Sprintf("Name: %s", config.SelectedMachine.Details.Name)))
-		contentWindow = append(contentWindow, g.Label(fmt.Sprintf("IP: %s", config.SelectedMachine.Details.IP)))
+		machineIp := config.SelectedMachine.Details.IP
+		machineIpWidgets := []g.Widget{
+			g.Label(fmt.Sprintf("IP: %s", machineIp)),
+		}
+		if machineIp != "" {
+			machineIpWidgets = append(machineIpWidgets, g.Button("Copy").OnClick(func() {
+				utils.SetClipboard(machineIp)
+			}))
+		}
+		contentWindow = append(contentWindow, g.Row(machineIpWidgets...))
 		contentWindow = append(contentWindow, g.Label(fmt.Sprintf("OS: %s", config.SelectedMachine.Details.OS)))
 		contentWindow = append(contentWindow, g.Label(fmt.Sprintf("Solved: %t", config.SelectedMachine.Details.Solved)))
 		contentWindow = append(contentWindow, g.Label(fmt.Sprintf("Mode: %s", config.SelectedMachine.Details.MachineMode)))
@@ -110,7 +119,16 @@ func drawMachineTab() g.Layout {
 
 	contentWindow = append(contentWindow, g.Separator())
 	contentWindow = append(contentWindow, g.Label(fmt.Sprintf("Current VPN: %s", config.CurrentVPN.Name)))
-	contentWindow = append(contentWindow, g.Label(fmt.Sprintf("VPN IP: %s", config.CurrentVPN.IP)))
+	vpnIp := config.CurrentVPN.IP
+	vpnIpWidgets := []g.Widget{
+		g.Label(fmt.Sprintf("VPN IP: %s", vpnIp)),
+	}
+	if vpnIp != "" {
+		vpnIpWidgets = append(vpnIpWidgets, g.Button("Copy").OnClick(func() {
+			utils.SetClipboard(vpnIp)
+		}))
+	}
+	contentWindow = append(contentWindow, g.Row(vpnIpWidgets...))
 	contentWindow = append(contentWindow, g.Label(fmt.Sprintf("VPN Status: %s", config.CurrentVPN.Status)))
 
 	vpnCombo := g.Layout{}
