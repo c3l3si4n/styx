@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"syscall"
+
 	"strconv"
 	"strings"
 	"time"
@@ -340,7 +342,6 @@ func SwitchVPNServer(serverId int, arena bool) error {
 
 	log.Println(bodyStr)
 	config.VPNRegionCurrentID = int32(serverId)
-	DownloadVPNFile(config.VPNRegionCurrentID)
 	return nil
 }
 
@@ -374,8 +375,6 @@ func DownloadVPNFile(serverId int32) {
 		panic(err)
 	}
 
-	ConnectToVPN()
-
 }
 
 func DownloadFile(url string, outputPath string) {
@@ -404,7 +403,9 @@ func ConnectToVPN() {
 	cmd := exec.Command("sudo", "openvpn", "/tmp/vpn.ovpn")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Pdeathsig: syscall.SIGTERM,
+	}
 	go func() {
 		err := cmd.Run()
 		if err != nil {

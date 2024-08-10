@@ -54,6 +54,9 @@ func vpnDataChanged() {
 		return
 	}
 	api.SwitchVPNServer(serverId, true)
+	api.DownloadVPNFile(config.VPNRegionCurrentID)
+	api.ConnectToVPN()
+
 	log.Println("Switched to server", serverId)
 }
 func drawMachineTab() g.Layout {
