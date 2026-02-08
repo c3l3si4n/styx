@@ -72,7 +72,8 @@ func Bingo() {
 	http.HandleFunc("/lin", linuxHandler)
 	http.HandleFunc("/win", winHandler)
 	go func() {
+		fmt.Println("Server started at http://0.0.0.0:1338")
 		http.ListenAndServe("0.0.0.0:1338", nil)
 	}()
-	fmt.Println("Server started at http://0.0.0.0:61234")
+	fmt.Println("Server started at http://0.0.0.0:1338")
 }

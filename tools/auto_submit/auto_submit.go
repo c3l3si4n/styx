@@ -23,7 +23,7 @@ var SubmittedFlags = make(map[string]bool)
 
 func StartSubmitter() {
 	// downlaod https://app.hackthebox.com/soundEffects/machine_pwned.mp3
-	api.DownloadFile("https://app.hackthebox.com/soundEffects/machine_pwned.mp3", "/var/tmp/machine_pwned.mp3")
+	api.DownloadFile("https://app.hackthebox.com/sound-effects/machine_pwned.mp3", "/var/tmp/machine_pwned.mp3")
 
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)

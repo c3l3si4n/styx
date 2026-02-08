@@ -400,6 +400,10 @@ func DownloadFile(url string, outputPath string) {
 }
 
 func ConnectToVPN() {
+
+	// Kill all openvpn processes
+	exec.Command("killall", "openvpn").Run()
+	exec.Command("sudo", "killall", "openvpn").Run()
 	cmd := exec.Command("sudo", "openvpn", "/tmp/vpn.ovpn")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
