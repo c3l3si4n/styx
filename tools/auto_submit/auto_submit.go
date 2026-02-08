@@ -22,8 +22,8 @@ func isValidHex(s string) bool {
 var SubmittedFlags = make(map[string]bool)
 
 func StartSubmitter() {
-	// downlaod https://app.hackthebox.com/soundEffects/machine_pwned.mp3
-	api.DownloadFile("https://app.hackthebox.com/sound-effects/machine_pwned.mp3", "/var/tmp/machine_pwned.mp3")
+	// download https://app.hackthebox.com/soundEffects/machine_pwned.mp3
+	api.DownloadFile("https://app.hackthebox.com/sound-effects/machine_pwned.mp3", "/tmp/machine_pwned.mp3")
 
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)
@@ -44,7 +44,7 @@ func StartSubmitter() {
 								if owned {
 									fmt.Println("Flag submitted successfully")
 									// Play sound
-									utils.PlaySound("/var/tmp/machine_pwned.mp3")
+									utils.PlaySound("/tmp/machine_pwned.mp3")
 
 								}
 

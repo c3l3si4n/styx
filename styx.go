@@ -170,7 +170,7 @@ func drawToolsTab() g.Layout {
 		layout := g.Layout{}
 		layout = append(layout, g.Label("Bingo server is running"))
 
-		ipAddress, err := bingo.GetInterfaceIpv4Addr("tun0")
+		ipAddress, err := bingo.GetVPNInterfaceIP()
 		if err != nil {
 			layout = append(layout, g.Label("Error getting HTB VPN address, are you connected to openvpn?"))
 		} else {

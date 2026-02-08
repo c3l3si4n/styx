@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"syscall"
+	"runtime"
 
 	"strconv"
 	"strings"
@@ -400,21 +400,22 @@ func DownloadFile(url string, outputPath string) {
 }
 
 func ConnectToVPN() {
-
 	// Kill all openvpn processes
-	exec.Command("killall", "openvpn").Run()
-	exec.Command("sudo", "killall", "openvpn").Run()
+	if runtime.GOOS == "darwin" {
+		exec.Command("pkill", "openvpn").Run()
+		exec.Command("sudo", "pkill", "openvpn").Run()
+	} else {
+		exec.Command("killall", "openvpn").Run()
+		exec.Command("sudo", "killall", "openvpn").Run()
+	}
 	cmd := exec.Command("sudo", "openvpn", "/tmp/vpn.ovpn")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Pdeathsig: syscall.SIGTERM,
-	}
+	setProcessGroup(cmd)
 	go func() {
 		err := cmd.Run()
 		if err != nil {
 			log.Println(err)
 		}
 	}()
-
 }
